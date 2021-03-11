@@ -25,7 +25,7 @@ latest_version="${versions[${#versions[@]}-1]}"
 
 REVISION="$(git rev-parse --short HEAD)"
 CREATED="$(date -u +”%Y-%m-%dT%H:%M:%SZ”)"
-IMAGE_NAME="docker.io/janusgraph/janusgraph"
+IMAGE_NAME="docker.io/horeaporutiu/janusgraph"
 
 echo "REVISION: ${REVISION}"
 echo "CREATED: ${CREATED}"
