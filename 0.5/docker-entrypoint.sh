@@ -20,9 +20,11 @@
 
 JANUS_PROPS="${JANUS_CONFIG_DIR}/janusgraph.properties"
 GREMLIN_YAML="${JANUS_CONFIG_DIR}/gremlin-server.yaml"
+echo "inside docker entry point"
 
 # running as root; step down to run as janusgraph user
 if [ "$1" == 'janusgraph' ] && [ "$(id -u)" == "0" ]; then
+  echo "we are running as root..."
   mkdir -p ${JANUS_DATA_DIR} ${JANUS_CONFIG_DIR}
   chown -R janusgraph:janusgraph ${JANUS_DATA_DIR} ${JANUS_CONFIG_DIR}
   chmod 700 ${JANUS_DATA_DIR} ${JANUS_CONFIG_DIR}
@@ -32,6 +34,9 @@ fi
 
 # running as non root user
 if [ "$1" == 'janusgraph' ]; then
+# if [ "$1" == '0' ]; then
+echo "we are running as janus"
+  usermod -a -G 0 janusgraph
   # setup config directory
   mkdir -p ${JANUS_DATA_DIR} ${JANUS_CONFIG_DIR}
   cp conf/gremlin-server/janusgraph-${JANUS_PROPS_TEMPLATE}-server.properties ${JANUS_CONFIG_DIR}/janusgraph.properties

@@ -63,12 +63,12 @@ ENV JANUS_VERSION=${JANUS_VERSION} \
     gremlinserver.threadPoolWorker=1 \
     gremlinserver.gremlinPool=8
 
-RUN groupadd -r janusgraph --gid=999 && \
-    useradd -r -g janusgraph --uid=999 -d ${JANUS_DATA_DIR} janusgraph && \
-    apt-get update -y && \
+RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends krb5-user && \
-    rm -rf /var/lib/apt/lists/*
-
+    rm -rf /var/lib/apt/lists/* && \
+    groupadd -r janusgraph --gid=999 && \
+    useradd -r -g janusgraph --uid=999 -d ${JANUS_DATA_DIR} janusgraph
+    
 COPY --from=builder /opt/janusgraph/ /opt/janusgraph/
 COPY --from=builder /opt/yq /usr/bin/yq
 COPY docker-entrypoint.sh /usr/local/bin/
@@ -79,6 +79,11 @@ RUN chmod 755 /usr/local/bin/docker-entrypoint.sh && \
     chmod 755 /usr/bin/yq && \
     mkdir -p ${JANUS_INITDB_DIR} ${JANUS_CONFIG_DIR} ${JANUS_DATA_DIR} && \
     chown -R janusgraph:janusgraph ${JANUS_HOME} ${JANUS_INITDB_DIR} ${JANUS_CONFIG_DIR} ${JANUS_DATA_DIR}
+
+RUN echo "about to change to group 0!!"
+
+RUN chown -R 0 ${JANUS_HOME} ${JANUS_INITDB_DIR} ${JANUS_CONFIG_DIR} ${JANUS_DATA_DIR} && \
+    chmod -R g=u ${JANUS_HOME} ${JANUS_INITDB_DIR} ${JANUS_CONFIG_DIR} ${JANUS_DATA_DIR}
 
 EXPOSE 8182
 
